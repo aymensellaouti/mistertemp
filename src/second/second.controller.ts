@@ -2,12 +2,17 @@ import { Controller, Get, InternalServerErrorException } from '@nestjs/common';
 import { catchError, count, filter, Observable, retry } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { HttpService } from '@nestjs/axios';
+import { SecondService } from "./second.service";
 
 @Controller('second')
 export class SecondController {
-  constructor(private httpService: HttpService) {}
+  constructor(
+    private httpService: HttpService,
+    private secondService: SecondService
+  ) {}
   @Get()
   secondObservableTest() {
+    this.secondService.saySomething();
     // const interval = new Observable<number>((observer) => {
     //   let i = 5;
     //   setInterval(() => {
