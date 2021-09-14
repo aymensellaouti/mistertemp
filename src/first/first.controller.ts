@@ -12,9 +12,13 @@ import {
   Put,
 } from '@nestjs/common';
 import { UpperAndFusionPipe } from "../pipes/upper-and-fusion.pipe";
+import { FirstService } from "./first.service";
 
 @Controller('first')
 export class FirstController {
+  constructor(
+    private firstService: FirstService
+  ) {}
   // binder /first/premier
   @Get('premier/:name?')
   getFirstMessage(
@@ -25,7 +29,8 @@ export class FirstController {
     )
     name: number,
   ): string {
-    return `Cc Mr ${name} in first controller`;
+    this.firstService.sayHello();
+    return 'first';
   }
   @Post()
   postFirst(@Body(UpperAndFusionPipe) data) {
