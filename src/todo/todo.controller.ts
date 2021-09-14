@@ -7,8 +7,8 @@ import {
   HttpCode,
   Param,
   Delete,
-  Put,
-} from '@nestjs/common';
+  Put, ParseIntPipe
+} from "@nestjs/common";
 import { Request } from 'express';
 import { TodoModel } from './model/todo.model';
 import { AddTodoDto } from './dto/add-todo.dto';
@@ -21,7 +21,7 @@ export class TodoController {
 
   constructor(private todoService: TodoService) {}
 
-  @Get('add')
+  @Get('')
   getTodos(@Req() request: Request): TodoModel[] {
     return this.todoService.getTodos();
   }
@@ -29,6 +29,7 @@ export class TodoController {
   @Post()
   @HttpCode(205)
   addTodo(@Body() partialTodo: AddTodoDto): TodoModel[] {
+    console.log(partialTodo instanceof AddTodoDto);
     return this.todoService.addTodo(partialTodo);
   }
 
@@ -44,7 +45,7 @@ export class TodoController {
   @Put(':id')
   updateTodo(
     @Param('id') id: string,
-    @Body() partialTodo: Partial<UpdateTodoDto>,
+    @Body() partialTodo: UpdateTodoDto,
   ): TodoModel {
     return this.todoService.updateTodo(id, partialTodo);
   }
