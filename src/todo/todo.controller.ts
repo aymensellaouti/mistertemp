@@ -7,15 +7,19 @@ import {
   HttpCode,
   Param,
   Delete,
-  Put, ParseIntPipe
-} from "@nestjs/common";
+  Put,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { Request } from 'express';
 import { TodoModel } from './model/todo.model';
 import { AddTodoDto } from './dto/add-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { TodoService } from './todo.service';
 
-@Controller('todo')
+@Controller({
+  path: 'todo',
+  version: '1',
+})
 export class TodoController {
   todos: TodoModel[] = [];
 

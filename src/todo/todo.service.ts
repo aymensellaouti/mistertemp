@@ -3,9 +3,13 @@ import { TodoModel } from './model/todo.model';
 import { AddTodoDto } from './dto/add-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { v4 as uuid4 } from 'uuid';
-import { Repository } from 'typeorm';
-import { TodoEntity } from '../todo.entity';
+import { Like, Repository } from 'typeorm';
+import { TodoEntity } from './entities/todo.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UpdateResult } from 'typeorm/query-builder/result/UpdateResult';
+import { DeleteResult } from 'typeorm/query-builder/result/DeleteResult';
+import { SearchTodoDto } from './dto/search-todo.dto';
+
 @Injectable()
 export class TodoService {
   todos: TodoModel[] = [];
@@ -59,5 +63,57 @@ export class TodoService {
       throw new NotFoundException(`le todo d'id ${id} n'existe pas`);
     }
     return todo;
+  }
+
+  addDbTodo(addTodoDto: AddTodoDto): Promise<TodoEntity> {
+    return this.todoRepository.save(addTodoDto);
+  }
+
+  async updateDbTodo(
+    id: string,
+    updateTodoDto: UpdateTodoDto,
+  ): Promise<TodoEntity> {
+    const todo = await this.todoRepository.preload({ id, ...updateTodoDto });
+    if (!todo) {
+      throw new NotFoundException();
+    }
+    return this.todoRepository.save(todo);
+    // return this.todoRepository.update(id, updateTodoDto);
+  }
+  async deleteDbTodo(id): Promise<DeleteResult> {
+    const result = await this.todoRepository.delete(id);
+    if (!result.affected) {
+      throw new NotFoundException();
+    }
+    return result;
+  }
+  async softDeleteDbTodo(id): Promise<UpdateResult> {
+    const result = await this.todoRepository.softDelete(id);
+    if (!result.affected) {
+      throw new NotFoundException();
+    }
+    return result;
+  }
+
+  async restoreDbTodo(id: string): Promise<UpdateResult> {
+    const result = await this.todoRepository.restore(id);
+    if (!result.affected) {
+      throw new NotFoundException();
+    }
+    return result;
+  }
+
+  findAll(searchCriteria: SearchTodoDto, options = {}): Promise<TodoEntity[]> {
+    const criterias = [];
+    const { status, criteria } = searchCriteria;
+    if (criteria) {
+      criterias.push({ name: Like(`%${criteria}%`) });
+      criterias.push({ description: Like(`%${criteria}%`) });
+    }
+    if (status) {
+      criterias.push({ status });
+    }
+    options = { ...options, where: criterias };
+    return this.todoRepository.find(options);
   }
 }

@@ -9,8 +9,8 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  Put,
-} from '@nestjs/common';
+  Put, Version
+} from "@nestjs/common";
 import { UpperAndFusionPipe } from "../pipes/upper-and-fusion.pipe";
 import { FirstService } from "./first.service";
 
@@ -51,5 +51,16 @@ export class FirstController {
   deleteFirst() {
     console.log(':rabbit delete');
     return ':turttle delete';
+  }
+
+  @Get('version')
+  @Version('1')
+  sayVersion() {
+    return 'v1';
+  }
+  @Get('version')
+  @Version('2')
+  sayVersion2() {
+    return 'v2';
   }
 }
