@@ -1,24 +1,28 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { TodoModel } from "./model/todo.model";
-import { AddTodoDto } from "./dto/add-todo.dto";
-import { UpdateTodoDto } from "./dto/update-todo.dto";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { TodoModel } from './model/todo.model';
+import { AddTodoDto } from './dto/add-todo.dto';
+import { UpdateTodoDto } from './dto/update-todo.dto';
 import { v4 as uuid4 } from 'uuid';
+import { Repository } from 'typeorm';
+import { TodoEntity } from '../todo.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 @Injectable()
 export class TodoService {
   todos: TodoModel[] = [];
 
-  constructor() {
+  constructor(
+    @InjectRepository(TodoEntity)
+    private todoRepository: Repository<TodoEntity>,
+  ) {
     this.todos = [
       new TodoModel(uuid4(), 'first todo', 'mon Premier todo'),
       new TodoModel(uuid4(), 'second todo', 'mon Second todo'),
     ];
   }
 
-
   getTodos(): TodoModel[] {
     return this.todos;
   }
-
 
   addTodo(partialTodo: AddTodoDto): TodoModel[] {
     const { name, description } = partialTodo;
@@ -29,7 +33,6 @@ export class TodoService {
     this.todos.push(newTodo);
     return this.todos;
   }
-
 
   finTodoById(id: string): TodoModel {
     return this.findTodoId(id);
@@ -42,10 +45,7 @@ export class TodoService {
       count: oldTodos.length - this.todos.length,
     };
   }
-  updateTodo(
-    id: string,
-    partialTodo: Partial<UpdateTodoDto>,
-  ): TodoModel {
+  updateTodo(id: string, partialTodo: Partial<UpdateTodoDto>): TodoModel {
     const { description, name, status } = partialTodo;
     const todo = this.findTodoId(id);
     todo.name = name ?? todo.name;
