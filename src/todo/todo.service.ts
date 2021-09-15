@@ -116,4 +116,12 @@ export class TodoService {
     options = { ...options, where: criterias };
     return this.todoRepository.find(options);
   }
+
+  async finTodoDbById(id: string): Promise<TodoEntity> {
+    const todo = await this.todoRepository.findOne(id);
+    if (!todo) {
+      throw new NotFoundException();
+    }
+    return todo;
+  }
 }

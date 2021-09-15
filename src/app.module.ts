@@ -13,6 +13,7 @@ import { TodoModule } from './todo/todo.module';
 import { FirstMiddleware } from './middleware/first.middleware';
 import configuration from './config/configuration';
 import { ConfigModule } from '@nestjs/config';
+import { JobModule } from './job/job.module';
 @Module({
   imports: [
     FirstModule,
@@ -32,6 +33,7 @@ import { ConfigModule } from '@nestjs/config';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    JobModule,
   ],
   controllers: [AppController],
   providers: [AppService],

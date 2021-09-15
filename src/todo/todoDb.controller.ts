@@ -37,12 +37,12 @@ export class TodoDbController {
   addTodo(@Body() addTodoDto: AddTodoDto): Promise<TodoModel> {
     return this.todoService.addDbTodo(addTodoDto);
   }
-  //
-  // @Get(':id')
-  // finTodoById(@Param('id') id: string): TodoModel {
-  //   return this.todoService.finTodoById(id);
-  // }
-  //
+
+  @Get(':id')
+  finTodoById(@Param('id') id: string): Promise<TodoModel> {
+    return this.todoService.finTodoDbById(id);
+  }
+
   @Delete(':id')
   deleteTodo(@Param('id') id: string): Promise<DeleteResult> {
     return this.todoService.softDeleteDbTodo(id);
