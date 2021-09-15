@@ -20,6 +20,7 @@ import { TodoEntity } from './entities/todo.entity';
 import { DeleteResult } from 'typeorm/query-builder/result/DeleteResult';
 import { UpdateResult } from 'typeorm/query-builder/result/UpdateResult';
 import { SearchTodoDto } from './dto/search-todo.dto';
+import { DateIntervalDto } from "../generics/date-interval.dto";
 
 @Controller({
   path: 'todo',
@@ -30,7 +31,7 @@ export class TodoDbController {
   constructor(private todoService: TodoService) {}
   @Get('')
   getTodos(@Query() searchTodoDto: SearchTodoDto): Promise<TodoModel[]> {
-    return this.todoService.findAll(searchTodoDto, {});
+    return this.todoService.findAllQb(searchTodoDto, {});
   }
 
   @Post()
@@ -58,5 +59,9 @@ export class TodoDbController {
     @Body() partialTodo: UpdateTodoDto,
   ): Promise<TodoEntity> {
     return this.todoService.updateDbTodo(id, partialTodo);
+  }
+  @Get('stats/status')
+  getStatsTodo(@Query() dateInterval: DateIntervalDto): Promise<any[]> {
+    return this.todoService.getStatsTodos(dateInterval);
   }
 }

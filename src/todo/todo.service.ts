@@ -9,6 +9,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateResult } from 'typeorm/query-builder/result/UpdateResult';
 import { DeleteResult } from 'typeorm/query-builder/result/DeleteResult';
 import { SearchTodoDto } from './dto/search-todo.dto';
+import { DateIntervalDto } from '../generics/date-interval.dto';
+import { paginate, setDateInterval } from './qb-utils';
 
 @Injectable()
 export class TodoService {
@@ -116,6 +118,29 @@ export class TodoService {
     options = { ...options, where: criterias };
     return this.todoRepository.find(options);
   }
+  findAllQb(
+    searchCriteria: SearchTodoDto,
+    options = {},
+  ): Promise<TodoEntity[]> {
+    const { status, criteria, page, pageSize } = searchCriteria;
+    const qb = this.todoRepository.createQueryBuilder('t');
+    if (criteria) {
+      qb.andWhere(
+        `(
+                (t.name like :criteria) or 
+                (t.description like :criteria)
+        )`,
+        {
+          criteria: `%${criteria}%`,
+        },
+      );
+    }
+    if (status) {
+      qb.andWhere(`t.status = :status`, { status });
+    }
+    paginate(qb, page, pageSize);
+    return qb.getMany();
+  }
 
   async finTodoDbById(id: string): Promise<TodoEntity> {
     const todo = await this.todoRepository.findOne(id);
@@ -123,5 +148,13 @@ export class TodoService {
       throw new NotFoundException();
     }
     return todo;
+  }
+
+  getStatsTodos(dateInterval: DateIntervalDto): Promise<any> {
+    const qb = this.todoRepository.createQueryBuilder('t');
+    const { startDate, endDate } = dateInterval || {};
+    qb.select('status, count(status) as number').groupBy('status');
+    setDateInterval(qb, startDate, endDate, 'created_at');
+    return qb.getRawMany();
   }
 }
