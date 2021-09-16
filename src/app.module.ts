@@ -14,6 +14,10 @@ import { FirstMiddleware } from './middleware/first.middleware';
 import configuration from './config/configuration';
 import { ConfigModule } from '@nestjs/config';
 import { JobModule } from './job/job.module';
+import { CvModule } from './cv/cv.module';
+import { SkillModule } from './skill/skill.module';
+import { UserModule } from './user/user.module';
+import { MulterModule } from '@nestjs/platform-express';
 @Module({
   imports: [
     FirstModule,
@@ -34,6 +38,10 @@ import { JobModule } from './job/job.module';
       isGlobal: true,
     }),
     JobModule,
+    CvModule,
+    SkillModule,
+    UserModule,
+    MulterModule.register(),
   ],
   controllers: [AppController],
   providers: [AppService],

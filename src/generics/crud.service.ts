@@ -6,6 +6,7 @@ import { DeleteResult } from 'typeorm/query-builder/result/DeleteResult';
 @Injectable()
 export class CrudService<T> {
   constructor(private readonly repository: Repository<T>) {}
+
   create(addDto): Promise<T> {
     return this.repository.save(addDto);
   }
