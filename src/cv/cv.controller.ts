@@ -14,7 +14,7 @@ import { CreateCvDto } from './dto/create-cv.dto';
 import { UpdateCvDto } from './dto/update-cv.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { editFileName } from '../generics/file.utils';
+import { editFileName, fileFilter } from '../generics/file.utils';
 
 @Controller('cv')
 export class CvController {
@@ -27,6 +27,7 @@ export class CvController {
         destination: './public/uploads',
         filename: editFileName,
       }),
+      fileFilter,
     }),
   )
   create(
